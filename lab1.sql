@@ -55,19 +55,19 @@ SELECT s.marka, s.cena, s.wartosc() FROM SAMOCHODY s;
 -- samochodów na podstawie ich wieku i zużycia. Przyjmij, że 10000 km odpowiada
 -- jednemu rokowi wieku samochodu.
 
-Alter type samochod add member function porownaj return number CASCADE;
+Alter type samochod add map MEMBER FUNCTION porownaj RETURN NUMBER CASCADE INCLUDING TABLE DATA;
 create or replace type body samochod as
     MEMBER FUNCTION wartosc RETURN NUMBER IS
     BEGIN
         RETURN cena * (1 - (months_between(sysdate, data_produkcji) / 12) * 0.1);
     END;
-    MEMBER FUNCTION porownaj RETURN NUMBER IS
+    map MEMBER FUNCTION porownaj RETURN NUMBER IS
     BEGIN
         RETURN (months_between(sysdate, data_produkcji) / 12) + (kilometry / 10000);
     END;
 END;
 
-SELECT * FROM SAMOCHODY s ORDER BY s.porownaj();
+SELECT s.MODEL, s.MARKA, s.CENA, s.DATA_PRODUKCJI, s.KILOMETRY FROM SAMOCHODY s ORDER BY value(s) desc;
 
 -- Stwórz typ WLASCICIEL zawierający imię i nazwisko właściciela samochodu, dodaj
 -- do typu SAMOCHOD referencje do właściciela. Wypełnij tabelę przykładowymi
